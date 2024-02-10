@@ -138,8 +138,10 @@ long LinuxParser::ActiveJiffies(int pid) {
 
   // Calculate active jiffies for the process
   // Sum utime (14), stime (15), cutime (16) and cstime (17)
-  for (int i = 14; i <= 17; i++) {
-    activeJiffies += stol(statValues[i]);
+  if (statValues.size() >= 18) {
+    for (int i = 14; i <= 17; i++) {
+      activeJiffies += stol(statValues[i]);
+    }
   }
 
   return activeJiffies;
