@@ -22,6 +22,32 @@
 
 // #endif
 
+// #ifndef PROCESS_H
+// #define PROCESS_H
+
+// #include <string>
+
+// class Process {
+//  public:
+//   Process(int pid);
+
+//   int Pid();
+//   std::string User();
+//   std::string Command();
+//   // float CpuUtilization();
+//     float CpuUtilization() const; // Add const here
+
+//   std::string Ram();
+//   long int UpTime();
+//   bool operator<(Process const& a) const;
+
+//  private:
+//   int pid_;
+// };
+
+// #endif
+
+
 #ifndef PROCESS_H
 #define PROCESS_H
 
@@ -29,18 +55,18 @@
 
 class Process {
  public:
-  Process(int pid);
+  explicit Process(int pid);  // Constructor with PID
 
-  int Pid();
-  std::string User();
-  std::string Command();
-  float CpuUtilization();
-  std::string Ram();
-  long int UpTime();
-  bool operator<(Process const& a) const;
+  int Pid() const;  // Return this process's ID
+  std::string User() const;  // Return the user (name) that generated this process
+  std::string Command() const;  // Return the command that generated this process
+  float CpuUtilization() const;  // Return this process's CPU utilization
+  std::string Ram() const;  // Return this process's memory utilization
+  long int UpTime() const;  // Return the age of this process in seconds
+  bool operator<(Process const& a) const;  // Overload the "less than" comparison operator for Process objects
 
  private:
-  int pid_;
+  int pid_;  // Process ID
 };
 
 #endif
