@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <limits>
 
 using std::stof;
 using std::string;
@@ -68,24 +69,40 @@ vector<int> LinuxParser::Pids() {
 }
 
 // TODO: Read and return the system memory utilization
-float LinuxParser::MemoryUtilization() {
-  string line, key;
-  float value, memTotal, memFree;
-  std::ifstream filestream(kProcDirectory + kMeminfoFilename);
-  if (filestream.is_open()) {
-    while (std::getline(filestream, line)) {
-      std::istringstream linestream(line);
-      linestream >> key >> value;
-      if (key == "MemTotal:") {
-        memTotal = value;
-      } else if (key == "MemFree:") {
-        memFree = value;
-      }
+float LinuxParser::MemoryUtilization() { 
+  long total_mem = 0;
+  long free_mem = 0;
+  long buffers_mem = 0;
+  long cached_mem = 0;
+
+  std::string token;
+  std::ifstream file("/proc/meminfo");
+  while (file >> token) {
+    string str_temp;
+    if (token == "MemTotal:") {
+      file >> str_temp;
+      total_mem = std::stol(str_temp);
+    } else if (token == "MemFree:") {
+      file >> str_temp;
+      free_mem = std::stol(str_temp);
+    } else if (token == "Buffers:") {
+      file >> str_temp;
+      buffers_mem = std::stol(str_temp);
+    } else if (token == "Cached:") {
+      file >> str_temp;
+      cached_mem = std::stol(str_temp);
     }
+
+    // Ignore the rest of the line
+    file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   }
-  return (memTotal - memFree) / memTotal;  // Memory utilization = (Total memory
-                                           // - Free memory) / Total memory
+
+  long use_mem = free_mem + buffers_mem + cached_mem;
+  float memory_utilization = (total_mem -  use_mem) / float(total_mem);
+
+  return memory_utilization; 
 }
+
 
 // TODO: Read and return the system uptime
 long LinuxParser::UpTime() {
