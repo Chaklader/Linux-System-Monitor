@@ -6,11 +6,16 @@
 #include <limits>
 #include <string>
 #include <vector>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+
 
 using std::stof;
 using std::string;
 using std::to_string;
 using std::vector;
+
 
 // DONE: An example of how to read data from the filesystem
 string LinuxParser::OperatingSystem() {
@@ -287,24 +292,58 @@ string LinuxParser::User(int pid) {
 }
 
 // TODO: Read and return the uptime of a process
+// long LinuxParser::UpTime(int pid) {
+//   string line;
+//   string value;
+//   vector<string> statValues;
+
+//   std::ifstream filestream(kProcDirectory + to_string(pid) + kStatFilename);
+//   if (filestream.is_open()) {
+//     std::getline(filestream, line);
+//     std::istringstream linestream(line);
+
+//     while (linestream >> value) {
+//       statValues.push_back(value);
+//     }
+//   }
+
+//   // uptime = system uptime (UpTime()) - process start time since boot (22 /
+//   // sysconf(_SC_CLK_TCK))
+//   long uptime = UpTime() - stol(statValues[22]) / sysconf(_SC_CLK_TCK);
+
+//   return uptime;
+// }
+
 long LinuxParser::UpTime(int pid) {
-  string line;
-  string value;
-  vector<string> statValues;
+    long upTime = 0;
+    string line;
+    string value;
+    vector<string> statValues;
 
-  std::ifstream filestream(kProcDirectory + to_string(pid) + kStatFilename);
-  if (filestream.is_open()) {
-    std::getline(filestream, line);
-    std::istringstream linestream(line);
-
-    while (linestream >> value) {
-      statValues.push_back(value);
+    std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatFilename);
+    if (filestream.is_open()) {
+        std::getline(filestream, line);
+        std::istringstream linestream(line);
+        while (linestream >> value) {
+            statValues.push_back(value);
+        }
     }
-  }
 
-  // uptime = system uptime (UpTime()) - process start time since boot (22 /
-  // sysconf(_SC_CLK_TCK))
-  long uptime = UpTime() - stol(statValues[22]) / sysconf(_SC_CLK_TCK);
+    if (statValues.size() > 21) { // Ensure vector is large enough for access
+        try {
+            // Using system uptime and subtracting process start time
+            long startTimeTicks = std::stol(statValues[21]); // starttime position in /proc/[pid]/stat
+            long systemUptime = LinuxParser::UpTime(); // System's uptime
+            long startTimeSeconds = startTimeTicks / sysconf(_SC_CLK_TCK);
+            upTime = systemUptime - startTimeSeconds;
+        } catch (const std::invalid_argument& e) {
+            std::cerr << "Invalid argument: Could not convert string to long while processing UpTime for PID " << pid << std::endl;
+        } catch (const std::out_of_range& e) {
+            std::cerr << "Out of range: String to long conversion error while processing UpTime for PID " << pid << std::endl;
+        }
+    } else {
+        // std::cerr << "Error: Not enough data in /proc/" << pid << "/stat to calculate uptime." << std::endl;
+    }
 
-  return uptime;
+    return upTime;
 }
