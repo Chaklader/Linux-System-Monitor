@@ -23,11 +23,6 @@ Processor& System::Cpu() {
     return cpu_;
 }
 
-// Return a container composed of the system's processes
-// vector<Process>& System::Processes() {
-//     processes_ = LinuxParser::Processes();
-//     return processes_;
-// }
 vector<Process>& System::Processes() { return processes_; }
 
 

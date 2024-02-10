@@ -105,25 +105,6 @@ long LinuxParser::Jiffies() {
 }
 
 // TODO: Read and return the number of active jiffies for a PID
-// long LinuxParser::ActiveJiffies(int pid) { 
-//     long activeJiffies = 0;
-//     string line, value;
-//     vector<string> statValues;
-//     std::ifstream filestream(kProcDirectory + to_string(pid) + kStatFilename);
-//     if (filestream.is_open()) {
-//         std::getline(filestream, line);
-//         std::istringstream linestream(line);
-//         while (linestream >> value) {
-//             statValues.push_back(value);
-//         }
-//         // Calculate active jiffies for the process: utime + stime + cutime + cstime
-//         for (int i = kUtime_; i <= kCstime_; i++) {
-//             activeJiffies += stol(statValues[i]);
-//         }
-//     }
-//     return activeJiffies;
-// }
-// long LinuxParser::ActiveJiffies(int pid [[maybe_unused]]) { return 0; }
 long LinuxParser::ActiveJiffies(int pid) {
 
     long activeJiffies = 0;
@@ -149,16 +130,6 @@ long LinuxParser::ActiveJiffies(int pid) {
 
     return activeJiffies; 
 }
-
-// TODO: Read and return the number of active jiffies for the system
-// long LinuxParser::ActiveJiffies() { 
-//     vector<string> cpuUtilization = CpuUtilization();
-//     // Calculate active jiffies for the system: user + nice + system + irq + softirq + steal
-//     long activeJiffies = stol(cpuUtilization[kUser_]) + stol(cpuUtilization[kNice_]) +
-//                          stol(cpuUtilization[kSystem_]) + stol(cpuUtilization[kIRQ_]) +
-//                          stol(cpuUtilization[kSoftIRQ_]) + stol(cpuUtilization[kSteal_]);
-//     return activeJiffies;
-// }
 
 // TODO: Read and return the number of active jiffies for the system
 // long LinuxParser::ActiveJiffies() { return 0; }
@@ -300,21 +271,6 @@ string LinuxParser::User(int pid) {
 }
 
 // TODO: Read and return the uptime of a process
-// long LinuxParser::UpTime(int pid) {
-//   string line, value;
-//   vector<string> statValues;
-//   ifstream filestream(kProcDirectory + to_string(pid) + kStatFilename);
-//   if (filestream.is_open()) {
-//     std::getline(filestream, line);
-//     istringstream linestream(line);
-//     while (linestream >> value) {
-//       statValues.push_back(value);
-//     }
-//     return UpTime() - std::stol(statValues[kStartTime_]) / sysconf(_SC_CLK_TCK);
-//   }
-//   return 0;
-// }
-// long LinuxParser::UpTime(int pid [[maybe_unused]]) { return 0; }
 long LinuxParser::UpTime(int pid) {
 
     string line;
