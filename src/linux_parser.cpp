@@ -3,9 +3,9 @@
 #include <dirent.h>
 #include <unistd.h>
 
+#include <limits>
 #include <string>
 #include <vector>
-#include <limits>
 
 using std::stof;
 using std::string;
@@ -69,7 +69,7 @@ vector<int> LinuxParser::Pids() {
 }
 
 // TODO: Read and return the system memory utilization
-float LinuxParser::MemoryUtilization() { 
+float LinuxParser::MemoryUtilization() {
   long total_mem = 0;
   long free_mem = 0;
   long buffers_mem = 0;
@@ -98,11 +98,10 @@ float LinuxParser::MemoryUtilization() {
   }
 
   long use_mem = free_mem + buffers_mem + cached_mem;
-  float memory_utilization = (total_mem -  use_mem) / float(total_mem);
+  float memory_utilization = (total_mem - use_mem) / float(total_mem);
 
-  return memory_utilization; 
+  return memory_utilization;
 }
-
 
 // TODO: Read and return the system uptime
 long LinuxParser::UpTime() {
